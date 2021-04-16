@@ -49,6 +49,7 @@ def cli_main():
     train_loader = DataLoader(dataset_train, **config.dataloaders.train)
     val_loader = DataLoader(dataset_val, **config.dataloaders.val)
     test_loader = DataLoader(dataset_test, **config.dataloaders.test)
+    config.dataloaders.train.len = len(train_loader)
 
     # ------------
     # model
@@ -62,7 +63,7 @@ def cli_main():
     # training
     # ------------
     logger = getattr(loggers, config.trainer.logger)
-    config.trainer.logger = logger('tb_logs', name=f"{config.datasets.name}_{config.model.model_name}")
+    config.trainer.logger = logger('tb_logs', name=f"{config.trainer.module}_{config.datasets.name}_{config.model.model_name}")
 
     trainer = pl.Trainer.from_argparse_args(config.trainer)
     trainer.fit(model, train_loader, val_loader)
