@@ -15,19 +15,25 @@ model:
     num_classes: 10
     checkpoint_path: ""
     pretrained: False
-    in_chans: 1
+    in_chans: 3
 
 loss: [{"module": CrossEntropyLoss,
-        "weight": 1,
+        "weight": 1.0,
+        "args": {
+                 size_average: None
+                },
         "preds": preds,
         "targets": targets},
        {"module": KLDivLoss,
-        "weight": 1,
+        "args": {
+                 size_average: False
+                },
+        "weight": 0.0,
         "preds": preds_T,
         "targets": soft_targets}]
 
 datasets:
-    name: MNIST
+    name: CIFAR10
     train_val_ratio: 
         train: 0.8
         val: 0.2
@@ -37,18 +43,18 @@ datasets:
         download: True
         transform: "transforms.Compose([
                        transforms.ToTensor(),
-                       transforms.Normalize((0.5), (0.5))])"
+                       transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])"
     val:
         transform: "transforms.Compose([
                        transforms.ToTensor(),
-                       transforms.Normalize((0.5), (0.5))])"
+                       transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])"
     test:
         root: /media/user/DATA/my_repo/LearningWithRetrospection/datasets
         train: False
         download: True
         transform: "transforms.Compose([
                        transforms.ToTensor(),
-                       transforms.Normalize((0.5), (0.5))])"
+                       transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])"
 
 dataloaders:
     train:

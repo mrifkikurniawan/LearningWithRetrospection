@@ -1,0 +1,77 @@
+trainer:
+    module: LWR #Naive or LWR
+    temperature: 5
+    seed: 0
+    gpus: 1
+    logger: TensorBoardLogger
+    max_epochs: 20
+    k: 5
+    metrics: [Accuracy, Precision, Recall, F1]
+    limit_train_batches: 500
+    limit_val_batches: 500
+    limit_test_batches: 500
+    optimizer: 
+        module: SGD
+        args: 
+            lr: 0.001
+            weight_decay: 0.0005 
+
+model:
+    model_name: resnet18
+    num_classes: 10
+    checkpoint_path: ""
+    pretrained: False
+    in_chans: 1
+
+loss: [{"module": CrossEntropyLoss,
+        "args": {
+                 size_average: None
+                },
+        "weight": 0.5,
+        "preds": preds,
+        "targets": targets},
+       {"module": KLDivLoss,
+        "args": {
+                 temperature: 5,
+                },
+        "weight": 0.5,
+        "preds": preds_T,
+        "targets": soft_targets}]
+
+datasets:
+    name: MNIST
+    train_val_ratio: 
+        train: 0.8
+        val: 0.2
+    train:
+        root: /media/user/DATA/my_repo/LearningWithRetrospection/datasets
+        train: True
+        download: True
+        transform: "transforms.Compose([
+                       transforms.ToTensor(),
+                       transforms.Normalize((0.5), (0.5))])"
+    val:
+        transform: "transforms.Compose([
+                       transforms.ToTensor(),
+                       transforms.Normalize((0.5), (0.5))])"
+    test:
+        root: /media/user/DATA/my_repo/LearningWithRetrospection/datasets
+        train: False
+        download: True
+        transform: "transforms.Compose([
+                       transforms.ToTensor(),
+                       transforms.Normalize((0.5), (0.5))])"
+
+dataloaders:
+    train:
+        batch_size: 32
+        num_workers: 4
+        shuffle: True
+    val:
+        batch_size: 1
+        num_workers: 4
+        shuffle: False
+    test:
+        batch_size: 1
+        num_workers: 4
+        shuffle: False
